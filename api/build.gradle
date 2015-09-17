@@ -1,0 +1,36 @@
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
+
+publishing {
+    publications {
+        api(MavenPublication) {
+            from components.java
+            groupId project.publishedGroupId
+            artifactId 'gendalf'
+            version project.libraryVersion
+        }
+    }
+}
+
+bintray {
+    user = project.property('bintrayUser')
+    key = project.property('bintrayApikey')
+    //configurations = ['archives']
+    publications = ['api']
+    pkg {
+        repo = 'maven'
+        name = 'gendalf'
+        //publish = true
+        licenses = ["MIT"]
+        vcsUrl = 'http://github.com'
+        version {
+            name = project.libraryVersion
+            //desc = project.libraryDescription
+            //attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
+        }
+    }
+}

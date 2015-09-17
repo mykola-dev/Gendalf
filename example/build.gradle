@@ -1,0 +1,30 @@
+repositories {
+    jcenter()
+    maven { url "https://dl.bintray.com/deviant-studio/maven/" }
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion '23.0.0'
+
+    defaultConfig {
+        applicationId 'ds.gendalf.example'
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1"
+    }
+}
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:+'
+
+    //compile project(':api')
+    //apt project(':compiler')
+    compile 'ds.gendalf:gendalf:+'
+    apt 'ds.gendalf:compiler:+'
+
+}

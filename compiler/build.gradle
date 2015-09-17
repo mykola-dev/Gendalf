@@ -1,0 +1,43 @@
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+dependencies {
+    compile project(':api')
+    compile 'com.google.auto.service:auto-service:1.0-rc2'
+    compile 'com.squareup:javapoet:1.2.0'
+}
+
+// bintray shit
+publishing {
+    publications {
+        compiler(MavenPublication) {
+            from components.java
+            groupId project.publishedGroupId
+            artifactId 'compiler'
+            version project.libraryVersion
+        }
+    }
+}
+
+bintray {
+    user = project.property('bintrayUser')
+    key = project.property('bintrayApikey')
+    //configurations = ['archives']
+    publications = ['compiler']
+    pkg {
+        repo = 'maven'
+        name = 'gendalf'
+        //publish = true
+        licenses = ["MIT"]
+        vcsUrl = 'http://github.com'
+        version {
+            name = project.libraryVersion
+        }
+    }
+}
+
+
+
+//apply from: 'https://raw.githubusercontent.com/attwellBrian/JCenter/master/installv1.gradle'
+//apply from: 'https://raw.githubusercontent.com/attwellBrian/JCenter/master/bintrayv1.gradle'
