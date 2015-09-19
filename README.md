@@ -3,23 +3,23 @@
 Add some sugar and type safety to android shared prefs:
 
 ```
-    // before
-		final String ageKey = "age";
-		final String userNameKey = "age";
-		final String adminKey = "admin";
-		SharedPreferences prefs = getSharedPreferences("custom_prefs", Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = prefs.edit();
-		editor.putInt(ageKey, 12);
-		editor.putString(userNameKey, "Luke");
-		editor.putBoolean(adminKey,true);
-		editor.apply();
+	// before
+	final String ageKey = "age";
+	final String userNameKey = "age";
+	final String adminKey = "admin";
+	SharedPreferences prefs = getSharedPreferences("custom_prefs", Context.MODE_PRIVATE);
+	SharedPreferences.Editor editor = prefs.edit();
+	editor.putInt(ageKey, 12);
+	editor.putString(userNameKey, "Luke");
+	editor.putBoolean(adminKey,true);
+	editor.apply();
 
-		// after
-		Gendalf.with(this)
-		       .setAge(12)
-		       .setUserName("Luke")
-		       .setAdmin(true)
-		       .apply();
+	// after
+	Gendalf.with(this)
+	       .setAge(12)
+	       .setUserName("Luke")
+	       .setAdmin(true)
+	       .apply();
 ```
 
 ## How to use:
@@ -35,10 +35,7 @@ buildscript {
         classpath 'com.neenbedankt.gradle.plugins:android-apt:+'
     }
 }
-repositories {
-    jcenter()
-    maven { url "https://dl.bintray.com/deviant-studio/maven/" }
-}
+
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
@@ -67,7 +64,7 @@ public interface PrefsConfigurator {
 
 After run build process Annotations Processor should generate Gendalf class. You can then use it like
 ```
-	Gendalf.with(this)
-		       .setUserName("Luke")
-		       .commit();
+Gendalf.with(this)
+       .setUserName("Luke")
+       .commit();
 ```
