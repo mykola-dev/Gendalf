@@ -13,22 +13,25 @@ public class MainActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_main);
 
 		// before
-		SharedPreferences prefs = getSharedPreferences("main_prefs", Context.MODE_PRIVATE);
+		final String ageKey = "age";
+		final String userNameKey = "age";
+		final String adminKey = "admin";
+		SharedPreferences prefs = getSharedPreferences("custom_prefs", Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
-		editor.putInt("age", 12);
-		editor.putString("userName", "Mykola");
+		editor.putInt(ageKey, 12);
+		editor.putString(userNameKey, "Luke");
+		editor.putBoolean(adminKey,true);
 		editor.apply();
 
 		// after
-		PrefsFake.with(this)
-		         .setAge(12)
-		         .setUserName("Mykola")
-		         .apply();
-
-		// generated
 		Gendalf.with(this)
+		       .setAge(12)
+		       .setUserName("Luke")
+		       .setAdmin(true)
 		       .apply();
 
+		// kotlin samples
+		KotlinExampleKt.doSomePrefs(this);
 
 	}
 

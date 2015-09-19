@@ -32,11 +32,11 @@ final class CodeGenerator {
 		}
 
 		return TypeSpec.classBuilder(data.getGeneratedClassName())
-		               .addField(prefs, "prefs", Modifier.PRIVATE)
-		               .addField(editor, "edit", Modifier.PRIVATE)
+		               .addField(prefs, "prefs", Modifier.PROTECTED)
+		               .addField(editor, "edit", Modifier.PROTECTED)
 		               .addMethod(constructor())
 		               .addMethod(with())
-		               .addModifiers(PUBLIC, FINAL)
+		               .addModifiers(PUBLIC)
 		               .addMethods(methods)
 		               .addMethod(apply())
 		               .addMethod(commit())
@@ -121,8 +121,6 @@ final class CodeGenerator {
 		                 .build();
 
 	}
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 }

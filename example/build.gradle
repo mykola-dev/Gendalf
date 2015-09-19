@@ -1,10 +1,11 @@
 repositories {
     jcenter()
-    maven { url "https://dl.bintray.com/deviant-studio/maven/" }
+    //maven { url "https://dl.bintray.com/deviant-studio/maven/" }
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'kotlin-android'
+//apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion 23
@@ -17,14 +18,35 @@ android {
         versionCode 1
         versionName "1"
     }
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+}
+
+kapt {
+    generateStubs = true
 }
 
 dependencies {
     compile 'com.android.support:appcompat-v7:+'
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile 'com.facebook.stetho:stetho:1.2.0'
 
-    //compile project(':api')
-    //apt project(':compiler')
-    compile 'ds.gendalf:gendalf:+'
-    apt 'ds.gendalf:compiler:+'
+    compile project(':api')
+    kapt project(':compiler')   // or use 'apt' for non kotlin
 
+    //compile 'ds.gendalf:gendalf:+'
+    //apt 'ds.gendalf:compiler:+'
+
+}
+
+buildscript {
+    ext.kotlin_version = '0.13.+'
+
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
 }
