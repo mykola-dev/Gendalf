@@ -1,4 +1,4 @@
-## Gendalf 
+### Another one library with weird name
 This lib produces some sugar and type safety for android shared preferences:
 
 ```
@@ -21,7 +21,7 @@ This lib produces some sugar and type safety for android shared preferences:
 	       .apply();
 ```
 
-## How to use:
+### How to use:
 
 
 Add gradle dependency:
