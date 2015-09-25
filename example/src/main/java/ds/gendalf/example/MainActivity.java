@@ -24,11 +24,11 @@ public class MainActivity extends AppCompatActivity {
 		editor.apply();
 
 		// after
-		Gendalf.with(this)
+		/*Gendalf.with(this)
 		       .setAge(12)
 		       .setUserName("Luke")
 		       .setAdmin(true)
-		       .apply();
+		       .apply();*/
 
 		// kotlin samples
 		KotlinExampleKt.doSomePrefs(this);

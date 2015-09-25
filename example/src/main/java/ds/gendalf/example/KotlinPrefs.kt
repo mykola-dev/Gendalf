@@ -42,11 +42,11 @@ private open class PrefsDelegate<T>(val default: T) : ReadWriteProperty<Any?, T>
         val n = property.name
         when (value) {
             is String -> prefs.edit().putString(n, value).apply()
-            is Int -> prefs.edit().putInt(n, value)
-            is Long -> prefs.edit().putLong(n, value)
-            is Float -> prefs.edit().putFloat(n, value)
-            is Boolean -> prefs.edit().putBoolean(n, value)
-            is Set<*> -> prefs.edit().putStringSet(n, value as Set<String>)
+            is Int -> prefs.edit().putInt(n, value).apply()
+            is Long -> prefs.edit().putLong(n, value).apply()
+            is Float -> prefs.edit().putFloat(n, value).apply()
+            is Boolean -> prefs.edit().putBoolean(n, value).apply()
+            is Set<*> -> prefs.edit().putStringSet(n, value as Set<String>).apply()
             else -> throw IllegalArgumentException()
         }
 
