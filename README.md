@@ -1,6 +1,5 @@
-# Gendalf
-
-Add some sugar and type safety to android shared prefs:
+## Gendalf 
+This lib produces some sugar and type safety for android shared preferences:
 
 ```
 	// before
@@ -62,7 +61,7 @@ public interface PrefsConfigurator {
 }
 ```
 
-After run build process Annotations Processor should generate Gendalf class. You can then use it like
+After run build task Annotations Processor should generate Gendalf class. You can then use it like
 ```
 Gendalf.with(this)
        .setUserName("Luke")
