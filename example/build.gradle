@@ -1,5 +1,6 @@
 repositories {
     jcenter()
+    maven { url "https://dl.bintray.com/deviant-studio/maven/" }
 }
 
 apply plugin: 'com.android.application'
@@ -31,11 +32,11 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile 'com.facebook.stetho:stetho:+'
 
-    compile project(':api')
-    apt project(':compiler')   // or use 'apt' for non kotlin
+    //compile project(':api')
+    //apt project(':compiler')   // or use 'apt' for non kotlin
 
-    //compile 'ds.gendalf:gendalf:+'
-    //kapt 'ds.gendalf:compiler:+'
+    compile "ds.gendalf:gendalf:${project.libraryVersion}"
+    apt "ds.gendalf:compiler:${project.libraryVersion}"
 
 }
 
