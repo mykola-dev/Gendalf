@@ -1,20 +1,27 @@
 package ds.gendalf.example;
 
 
+import java.util.Set;
+
 import ds.gendalf.PrefKey;
 import ds.gendalf.PrefsConfig;
 
-import java.util.Set;
+@PrefsConfig(filename = "app_prefs", cls = "AppPrefs")
+interface AppPrefsConfigurator {
 
-@PrefsConfig("custom_prefs")
-public interface PrefsConfigurator {
+    @PrefKey String version = null;
+    @PrefKey String os = null;
+}
 
-	@PrefKey String city = "Kharkiv";
-	@PrefKey String userName = null;
-	@PrefKey int age = 18;
-	@PrefKey int KEY_VERSION = 0;
-	@PrefKey boolean admin = true;
-	@PrefKey float length = 20.5f;
-	@PrefKey long time = 0;
-	@PrefKey Set<String> friends = null;
+@PrefsConfig(filename = "user_prefs", cls = "UserPrefs")
+interface UserPrefsConfigurator {
+
+    @PrefKey String city = "Kharkiv";
+    @PrefKey String userName = null;
+    @PrefKey int age = 18;
+    @PrefKey int KEY_RATE = 0;
+    @PrefKey boolean admin = true;
+    @PrefKey float length = 20.5f;
+    @PrefKey long time = 0;
+    @PrefKey Set<String> friends = null;
 }

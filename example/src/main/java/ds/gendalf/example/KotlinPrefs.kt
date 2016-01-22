@@ -3,6 +3,7 @@ package ds.gendalf.example
 import android.content.Context
 import android.content.SharedPreferences
 import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KProperty
 
 
 /**
@@ -15,15 +16,15 @@ object KotlinPrefsSetup {
     }
 }
 
-fun prefsKey<T>(default: T): PrefsDelegate<T> = PrefsDelegate(default)
+fun <T> prefsKey(default: T): PrefsDelegate<T> = PrefsDelegate(default)
 
-private open class PrefsDelegate<T>(val default: T) : ReadWriteProperty<Any?, T> {
+open class PrefsDelegate<T>(val default: T) : ReadWriteProperty<Any?, T> {
 
     protected val prefs: SharedPreferences = KotlinPrefsSetup.prefs
     var value: T = default
 
     @Suppress("unchecked_cast")
-    override fun get(thisRef: Any?, property: PropertyMetadata): T {
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T {
         val n = property.name
         when (value) {
             is String -> return prefs.getString(n, default as String) as T
@@ -37,7 +38,7 @@ private open class PrefsDelegate<T>(val default: T) : ReadWriteProperty<Any?, T>
     }
 
     @Suppress("unchecked_cast")
-    override fun set(thisRef: Any?, property: PropertyMetadata, value: T) {
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
         this.value = value
         val n = property.name
         when (value) {

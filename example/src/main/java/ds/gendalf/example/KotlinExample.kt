@@ -1,15 +1,8 @@
 package ds.gendalf.example
 
 import android.content.Context
-import java.util.*
 
 fun doSomePrefs(ctx: Context) {
-    ctx.prefs()
-            .setAdmin(true)
-            .setCity("Kyiv")
-            .setFriends(setOf("Billy", "Jimmy"))
-            .setTime(Date().time)
-            .apply()
 
     // kotlin bonus
     KotlinPrefsSetup.init(ctx, "prefs")

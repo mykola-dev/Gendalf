@@ -1,15 +1,14 @@
 repositories {
     jcenter()
-    //maven { url "https://dl.bintray.com/deviant-studio/maven/" }
 }
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-//apply plugin: 'com.neenbedankt.android-apt'
+apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '23.0.0'
+    buildToolsVersion '23.0.2'
 
     defaultConfig {
         applicationId 'ds.gendalf.example'
@@ -32,16 +31,16 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile 'com.facebook.stetho:stetho:+'
 
-    //compile project(':api')
-    //kapt project(':compiler')   // or use 'apt' for non kotlin
+    compile project(':api')
+    apt project(':compiler')   // or use 'apt' for non kotlin
 
-    compile 'ds.gendalf:gendalf:+'
-    kapt 'ds.gendalf:compiler:+'
+    //compile 'ds.gendalf:gendalf:+'
+    //kapt 'ds.gendalf:compiler:+'
 
 }
 
 buildscript {
-    ext.kotlin_version = '0.13.+'
+    ext.kotlin_version = '1.0.+'
 
     repositories {
         jcenter()
