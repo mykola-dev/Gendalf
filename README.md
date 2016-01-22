@@ -18,8 +18,7 @@ Add some sugar and type safety to android shared prefs:
 	Gendalf.with(this)
 	       .setAge(12)
 	       .setUserName("Luke")
-	       .setAdmin(true)
-	       .apply();
+	       .setAdmin(true);
 ```
 
 ## How to use:
@@ -40,15 +39,15 @@ apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
 
-    compile 'ds.gendalf:gendalf:+'
-    apt 'ds.gendalf:compiler:+'
+    compile 'ds.gendalf:gendalf:1.0.0beta3'
+    apt 'ds.gendalf:compiler:1.0.0beta3'
 
 }
 ```
 
 Generate prefs model:
 ```
-@PrefsConfig("custom_prefs")
+@PrefsConfig("Gendalf")
 public interface PrefsConfigurator {
 
 	@PrefKey String city = "Kharkiv";
@@ -62,7 +61,7 @@ public interface PrefsConfigurator {
 }
 ```
 
-After run build process Annotations Processor should generate Gendalf class. You can then use it like
+Run 'make' and then you can use generated helper like
 ```
 Gendalf.with(this)
        .setUserName("Luke")
