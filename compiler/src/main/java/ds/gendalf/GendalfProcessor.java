@@ -56,9 +56,9 @@ public class GendalfProcessor extends AbstractProcessor {
         for (Element e : roundEnv.getElementsAnnotatedWith(PrefKey.class)) {
             if (e instanceof VariableElement) {
                 final TypeElement parent = (TypeElement) e.getEnclosingElement();
-                String cls = parent.getAnnotation(PrefsConfig.class).cls();
+                String cls = parent.getAnnotation(PrefsConfig.class).value();
                 if (!data.containsKey(cls)) {
-                    String filename = parent.getAnnotation(PrefsConfig.class).filename();
+                    String filename = Utils.toUnderScore(cls);
                     //String packageName = Utils.getPackageName(parent);
                     data.put(cls, new ClassData(cls, filename));
                 }

@@ -12,20 +12,37 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // before
+        // Android style
+        final String idKey = "ID";
         final String ageKey = "age";
-        final String userNameKey = "age";
+        final String userNameKey = "userName";
         final String adminKey = "admin";
-        SharedPreferences prefs = getSharedPreferences("custom_prefs", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
+        final String cityKey = "city";
+        SharedPreferences userPrefs = this.getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = userPrefs.edit();
+        editor.putInt(idKey, 100500);
         editor.putInt(ageKey, 12);
         editor.putString(userNameKey, "Luke");
+        editor.putString(cityKey, "Kharkiv");
         editor.putBoolean(adminKey, true);
         editor.apply();
 
+        final String osKey = "os";
+        final String versionKey = "version";
+        final String secretKey = "PREF_SECRET";
+        SharedPreferences appPrefs = this.getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
+        editor = appPrefs.edit();
+        if (appPrefs.contains(osKey)) {
+            editor.clear();
+            editor.putString(osKey, "Windows");
+            editor.putString(versionKey, "1995");
+            editor.putString(secretKey, "00000000");
+            editor.apply();
+        }
 
-        // after
+        // Gendalf style
         UserPrefs.with(this)
+                 .setId(100500)
                  .setAge(12)
                  .setUserName("Luke")
                  .setCity(null)
@@ -35,12 +52,12 @@ public class MainActivity extends AppCompatActivity {
         if (ap.containsOs()) {
             ap.clearAll()
               .setOs("Windows")
-              .setVersion("1995");
+              .setVersion("1995")
+              .setPrefSecret("00000000");
         }
 
-        // kotlin samples
-        //KotlinExampleKt.doSomePrefs(this);
-
+        // direct prefs access
+        SharedPreferences rawPrefs = ap.getPrefs();
 
     }
 

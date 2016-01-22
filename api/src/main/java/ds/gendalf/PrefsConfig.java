@@ -6,9 +6,5 @@ import static java.lang.annotation.ElementType.TYPE;
 
 @Target(value = TYPE)
 public @interface PrefsConfig {
-    String value() default ("");
-
-    String filename() default ("gendalf_prefs");
-
-    String cls() default ("Gendalf");
+    String value() default ("Gendalf");
 }

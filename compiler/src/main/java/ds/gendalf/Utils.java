@@ -56,8 +56,8 @@ final class Utils {
     }
 
 
-    public static String provideGetSetName(String fieldName) {
-        if (fieldName.contains("_")) {
+    public static String toCamelCase(String fieldName) {
+        if (isUpperCase(fieldName) || fieldName.contains("_")) {
             String[] parts = fieldName.split("_");
             StringBuilder b = new StringBuilder();
             for (String p : parts) {
@@ -71,6 +71,19 @@ final class Utils {
         }
 
         return fieldName;
+    }
+
+    public static String toUnderScore(String s) {
+        return s.replaceAll("([a-z])([A-Z])","$1_$2").toLowerCase();
+    }
+
+    public static boolean isUpperCase(String s) {
+        for (int i = 0; i < s.length(); i++) {
+            if (Character.isLowerCase(s.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 
 

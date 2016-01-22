@@ -53,7 +53,7 @@ final class CodeGenerator {
     }
 
     private MethodSpec getPrefs() {
-        return MethodSpec.methodBuilder("with")
+        return MethodSpec.methodBuilder("getPrefs")
                          .addModifiers(PUBLIC, FINAL)
                          .addStatement("return prefs")
                          .returns(prefs)
@@ -83,7 +83,7 @@ final class CodeGenerator {
 
     private MethodSpec setter(VariableElement e) {
         final String fieldName = e.getSimpleName().toString();
-        final String setterName = Utils.appendPrefixTo(Utils.provideGetSetName(fieldName), "set");
+        final String setterName = Utils.appendPrefixTo(Utils.toCamelCase(fieldName), "set");
         final TypeName type = ClassName.get(e.asType());
         final String prefsSetterName = Utils.getPrefsSetter(e);
         return MethodSpec.methodBuilder(setterName)
@@ -101,7 +101,7 @@ final class CodeGenerator {
         final String fieldName = e.getSimpleName().toString();
         final TypeName type = ClassName.get(e.asType());
         final String prefix = (type == TypeName.BOOLEAN) ? "is" : "get";
-        final String getterName = Utils.appendPrefixTo(Utils.provideGetSetName(fieldName), prefix);
+        final String getterName = Utils.appendPrefixTo(Utils.toCamelCase(fieldName), prefix);
         final String prefsGetterName = Utils.getPrefsGetter(e);
         return MethodSpec.methodBuilder(getterName)
                          .addModifiers(PUBLIC, FINAL)
@@ -137,7 +137,7 @@ final class CodeGenerator {
 
     private MethodSpec contains(final VariableElement e) {
         final String fieldName = e.getSimpleName().toString();
-        final String methodName = Utils.appendPrefixTo(Utils.provideGetSetName(fieldName), "contains");
+        final String methodName = Utils.appendPrefixTo(Utils.toCamelCase(fieldName), "contains");
         return MethodSpec.methodBuilder(methodName)
                          .addModifiers(PUBLIC, FINAL)
                          .addStatement("return prefs.contains($S)", fieldName)
