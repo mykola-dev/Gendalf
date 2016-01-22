@@ -23,7 +23,6 @@ publishing {
 bintray {
     user = project.property('bintrayUser')
     key = project.property('bintrayApikey')
-    //configurations = ['archives']
     publications = ['compiler']
     pkg {
         repo = 'maven'
@@ -36,8 +35,3 @@ bintray {
         }
     }
 }
-
-
-
-//apply from: 'https://raw.githubusercontent.com/attwellBrian/JCenter/master/installv1.gradle'
-//apply from: 'https://raw.githubusercontent.com/attwellBrian/JCenter/master/bintrayv1.gradle'

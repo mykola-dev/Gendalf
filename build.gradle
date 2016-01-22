@@ -18,7 +18,6 @@ allprojects {
 ext {
     publishedGroupId = 'ds.gendalf'
     libraryVersion = '1.0.0beta3'
-    //libraryDescription = 'descr'
 }
 
 

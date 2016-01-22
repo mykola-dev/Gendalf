@@ -19,7 +19,6 @@ publishing {
 bintray {
     user = project.property('bintrayUser')
     key = project.property('bintrayApikey')
-    //configurations = ['archives']
     publications = ['api']
     pkg {
         repo = 'maven'
