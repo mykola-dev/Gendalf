@@ -28,11 +28,15 @@ public class MainActivity extends AppCompatActivity {
         UserPrefs.with(this)
                  .setAge(12)
                  .setUserName("Luke")
+                 .setCity(null)
                  .setAdmin(true);
 
-        AppPrefs.with(this)
-                .setOs("Windows")
-                .setVersion("1995");
+        AppPrefs ap = AppPrefs.with(this);
+        if (ap.containsOs()) {
+            ap.clearAll()
+              .setOs("Windows")
+              .setVersion("1995");
+        }
 
         // kotlin samples
         //KotlinExampleKt.doSomePrefs(this);

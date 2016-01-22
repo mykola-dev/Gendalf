@@ -34,11 +34,12 @@ final class CodeGenerator {
         for (VariableElement e : data.elements) {
             methods.add(getter(e));
             methods.add(setter(e));
+            methods.add(contains(e));
         }
 
         return TypeSpec.classBuilder(data.getClassName())
-                       .addField(prefs, "prefs", Modifier.PROTECTED)
-                       .addField(editor, "edit", Modifier.PROTECTED)
+                       .addField(prefs, "prefs", Modifier.PRIVATE)
+                       .addField(editor, "edit", Modifier.PRIVATE)
                        .addMethod(constructor())
                        .addMethod(with())
                        .addModifiers(PUBLIC)
@@ -46,7 +47,17 @@ final class CodeGenerator {
                         //.addMethod(apply())
                 .addMethod(commit())
                 .addMethod(getAll())
+                .addMethod(clear())
+                .addMethod(getPrefs())
                 .build();
+    }
+
+    private MethodSpec getPrefs() {
+        return MethodSpec.methodBuilder("with")
+                         .addModifiers(PUBLIC, FINAL)
+                         .addStatement("return prefs")
+                         .returns(prefs)
+                         .build();
     }
 
 
@@ -115,6 +126,24 @@ final class CodeGenerator {
                          .build();
     }
 
+    private MethodSpec clear() {
+        return MethodSpec.methodBuilder("clearAll")
+                         .addModifiers(PUBLIC, FINAL)
+                         .addStatement("edit.clear()")
+                         .addStatement("return this")
+                         .returns(ClassName.bestGuess(data.getClassName()))
+                         .build();
+    }
+
+    private MethodSpec contains(final VariableElement e) {
+        final String fieldName = e.getSimpleName().toString();
+        final String methodName = Utils.appendPrefixTo(Utils.provideGetSetName(fieldName), "contains");
+        return MethodSpec.methodBuilder(methodName)
+                         .addModifiers(PUBLIC, FINAL)
+                         .addStatement("return prefs.contains($S)", fieldName)
+                         .returns(TypeName.BOOLEAN)
+                         .build();
+    }
 
     private MethodSpec getAll() {
         final ParameterizedTypeName map = ParameterizedTypeName.get(
