@@ -42,7 +42,7 @@ final class CodeGenerator {
                        .addField(editor, "edit", Modifier.PRIVATE)
                        .addMethod(constructor())
                        .addMethod(with())
-                       .addModifiers(PUBLIC)
+                       .addModifiers(PUBLIC, FINAL)
                 .addMethods(methods)
                         //.addMethod(apply())
                 .addMethod(commit())
