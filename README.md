@@ -1,6 +1,5 @@
-# Gendalf
-
-Add some sugar and type safety to android shared prefs:
+### Another one library with weird name
+This lib produces some sugar and type safety for android shared preferences:
 
 ```
 	// before
@@ -21,7 +20,7 @@ Add some sugar and type safety to android shared prefs:
 	       .setAdmin(true);
 ```
 
-## How to use:
+### How to use:
 
 
 Add gradle dependency:
