@@ -25,29 +25,3 @@ ext {
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
-
-gradle.useLogger(new TimestampEventLogger())
-
-class TimestampEventLogger extends BuildAdapter implements TaskExecutionListener {
-
-    def timestamp = 0L
-
-    public void beforeExecute(Task task) {
-        print "> $task.project.name:$task.name "
-        timestamp = System.currentTimeMillis()
-    }
-
-    public void afterExecute(Task task, TaskState state) {
-        def elapsed = (System.currentTimeMillis() - timestamp) / 1000F
-        println "[$elapsed]"
-    }
-
-    public void buildFinished(BuildResult result) {
-        println 'build completed'
-        if (result.failure != null) {
-            result.failure.printStackTrace()
-        }
-    }
-}
-
-

@@ -49,7 +49,16 @@ final class CodeGenerator {
                 .addMethod(getAll())
                 .addMethod(clear())
                 .addMethod(getPrefs())
+                       .addMethod(getFileName())
                 .build();
+    }
+
+    private MethodSpec getFileName() {
+        return MethodSpec.methodBuilder("getFileName")
+                         .addModifiers(PUBLIC, FINAL)
+                         .addStatement("return $S",data.getFileName())
+                         .returns(ClassName.get(String.class))
+                         .build();
     }
 
     private MethodSpec getPrefs() {
