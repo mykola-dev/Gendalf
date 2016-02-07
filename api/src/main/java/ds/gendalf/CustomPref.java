@@ -5,7 +5,6 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.FIELD;
 
 @Target(value = FIELD)
-@Deprecated
-public @interface PrefKey {
-	String value() default "";
+public @interface CustomPref {
+    Class<? extends Converter> value();
 }

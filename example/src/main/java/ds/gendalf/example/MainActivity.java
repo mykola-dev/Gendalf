@@ -2,8 +2,16 @@ package ds.gendalf.example;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+
+import java.util.Arrays;
+
+import ds.gendalf.example.data.Guitar;
+
+import static ds.gendalf.example.data.Direction.*;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,12 +57,15 @@ public class MainActivity extends AppCompatActivity {
                  .setAdmin(true);
 
         AppPrefs ap = AppPrefs.with(this);
-        if (ap.containsOs()) {
-            ap.clearAll()
-              .setOs("Windows")
-              .setVersion("1995")
-              .setPrefSecret("00000000");
-        }
+        ap.clearAll()
+          .setOs("Windows")
+          .setVersion("1995")
+          .setNames(Arrays.asList("Geralt", "Triss", "Yennefer"))
+          .setDirections(Arrays.asList(UP, UP, DOWN, DOWN, LEFT, RIGHT, LEFT, RIGHT))
+          .setGuitar(new Guitar("electric", 99.95f, Color.RED))
+          .setPrefSecret("00000000");
+
+        Log.v("directions", ap.fetchDirections().toString());
 
         // direct prefs access
         SharedPreferences rawPrefs = ap.getPrefs();

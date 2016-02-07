@@ -1,55 +1,65 @@
 package ds.gendalf;
 
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
-import com.squareup.javapoet.WildcardTypeName;
+import com.squareup.javapoet.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.VariableElement;
+import javax.lang.model.element.*;
+import javax.lang.model.type.TypeMirror;
 
 import static javax.lang.model.element.Modifier.*;
 
 final class CodeGenerator {
 
-
     private ClassData data;
+
     private ClassName context = ClassName.get("android.content", "Context");
     private ClassName prefs = ClassName.get("android.content", "SharedPreferences");
     private ClassName editor = ClassName.get("android.content", "SharedPreferences.Editor");
-
+    private Map<String, FieldSpec> converters = new HashMap<>();
 
     CodeGenerator(ClassData data) {
         this.data = data;
     }
 
-
     TypeSpec generateClass() {
         List<MethodSpec> methods = new ArrayList<>();
         for (VariableElement e : data.elements) {
-            methods.add(getter(e));
-            methods.add(setter(e));
+            ConverterData converter = Utils.createConverterData(e);
+            if (converter != null) {
+                if (!converters.containsKey(converter.field.name))
+                    converters.put(converter.field.name, converter.field);
+                methods.add(customGetter(e, converter));
+                methods.add(customSetter(e, converter));
+            } else {
+                methods.add(getter(e));
+                methods.add(setter(e));
+            }
             methods.add(contains(e));
         }
 
         return TypeSpec.classBuilder(data.getClassName())
                        .addField(prefs, "prefs", Modifier.PRIVATE)
                        .addField(editor, "edit", Modifier.PRIVATE)
+                       .addFields(converters.values())
                        .addMethod(constructor())
                        .addMethod(with())
-                       .addModifiers(PUBLIC)
-                .addMethods(methods)
-                        //.addMethod(apply())
-                .addMethod(commit())
-                .addMethod(getAll())
-                .addMethod(clear())
-                .addMethod(getPrefs())
-                .build();
+                       .addModifiers(PUBLIC, FINAL)
+                       .addMethods(methods)
+                       .addMethod(commit())
+                       .addMethod(getAll())
+                       .addMethod(clear())
+                       .addMethod(getPrefs())
+                       .addMethod(getFileName())
+                       .build();
+    }
+
+    private MethodSpec getFileName() {
+        return MethodSpec.methodBuilder("getFileName")
+                         .addModifiers(PUBLIC, FINAL)
+                         .addStatement("return $S", data.getFileName())
+                         .returns(ClassName.get(String.class))
+                         .build();
     }
 
     private MethodSpec getPrefs() {
@@ -60,7 +70,6 @@ final class CodeGenerator {
                          .build();
     }
 
-
     private MethodSpec with() {
         return MethodSpec.methodBuilder("with")
                          .addModifiers(PUBLIC, STATIC)
@@ -70,7 +79,6 @@ final class CodeGenerator {
                          .build();
     }
 
-
     private MethodSpec constructor() {
         return MethodSpec.constructorBuilder()
                          .addModifiers(Modifier.PRIVATE)
@@ -79,7 +87,6 @@ final class CodeGenerator {
                          .addStatement("edit = prefs.edit()")
                          .build();
     }
-
 
     private MethodSpec setter(VariableElement e) {
         final String fieldName = e.getSimpleName().toString();
@@ -96,7 +103,6 @@ final class CodeGenerator {
                          .build();
     }
 
-
     private MethodSpec getter(VariableElement e) {
         final String fieldName = e.getSimpleName().toString();
         final TypeName type = ClassName.get(e.asType());
@@ -110,6 +116,42 @@ final class CodeGenerator {
                          .build();
     }
 
+    private MethodSpec customGetter(VariableElement e, ConverterData cd) {
+        final String fieldName = e.getSimpleName().toString();
+        TypeMirror fieldType = e.asType();
+        if (!fieldType.toString().equals(cd.typeAMirror.toString())){
+            throw new ClassCastException(String.format("Field type %s and converter type %s don't match",fieldType.toString(),cd.typeAMirror.toString()));
+            //return null;
+        }
+        final TypeName returnType = TypeName.get(cd.typeAMirror);
+        final ClassName prefType = ClassName.get((TypeElement) Utils.typeUtils.asElement(cd.typeBMirror));
+        final String prefix = "fetch";
+        final String getterName = Utils.appendPrefixTo(Utils.toCamelCase(fieldName), prefix);
+        final String prefsGetterName = "get" + Utils.getPrefsMethodSuffix(prefType.simpleName());
+        return MethodSpec.methodBuilder(getterName)
+                         .addModifiers(PUBLIC, FINAL)
+                         .addStatement("return $L.deserialize(prefs.$L($S, $L))", cd.field.name, prefsGetterName, fieldName, Utils.provideDefaultValue(prefType, e))
+                         .returns(returnType)
+                         .addJavadoc("You need to cache this value manually to avoid performance hit during deserialization")
+                         .build();
+    }
+
+    private MethodSpec customSetter(VariableElement e, ConverterData cd) {
+        final String fieldName = e.getSimpleName().toString();
+        final TypeName paramType = TypeName.get(cd.typeAMirror);
+        final ClassName prefType = ClassName.get((TypeElement) Utils.typeUtils.asElement(cd.typeBMirror));
+        final String setterName = Utils.appendPrefixTo(Utils.toCamelCase(fieldName), "set");
+        //final TypeName type = ClassName.get(e.asType());
+        final String prefsSetterName = "put" + Utils.getPrefsMethodSuffix(prefType.simpleName());
+        return MethodSpec.methodBuilder(setterName)
+                         .addModifiers(PUBLIC, FINAL)
+                         .addParameter(paramType, fieldName)
+                         .addStatement("edit.$L($S, $L.serialize($L))", prefsSetterName, fieldName, cd.field.name, fieldName)
+                         .addStatement("edit.apply()")
+                         .addStatement("return this")
+                         .returns(ClassName.bestGuess(data.getClassName()))
+                         .build();
+    }
 
     private MethodSpec apply() {
         return MethodSpec.methodBuilder("apply")
@@ -117,7 +159,6 @@ final class CodeGenerator {
                          .addStatement("edit.apply()")
                          .build();
     }
-
 
     private MethodSpec commit() {
         return MethodSpec.methodBuilder("commit")
@@ -157,6 +198,4 @@ final class CodeGenerator {
                          .build();
 
     }
-
-
 }

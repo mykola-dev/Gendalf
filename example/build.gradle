@@ -28,15 +28,15 @@ kapt {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:+'
+    compile 'com.android.support:appcompat-v7:23.1.1'
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile 'com.facebook.stetho:stetho:+'
 
-    compile project(':api')
-    apt project(':compiler')   // or use 'apt' for non kotlin
+    //compile project(':api')
+    //apt project(':compiler')
 
-    //compile "ds.gendalf:gendalf:${project.libraryVersion}"
-    //apt "ds.gendalf:compiler:${project.libraryVersion}"
+    compile "ds.gendalf:gendalf:${project.libraryVersion}"
+    apt "ds.gendalf:compiler:${project.libraryVersion}"     // or use 'apt' for non kotlin
 
 }
 

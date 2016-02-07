@@ -5,19 +5,11 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.annotation.processing.Processor;
-import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
+import javax.lang.model.element.*;
 
 import static com.squareup.javapoet.JavaFile.builder;
 
@@ -37,7 +29,7 @@ public class GendalfProcessor extends AbstractProcessor {
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         Set<String> set = new LinkedHashSet<>();
-        set.add(PrefKey.class.getCanonicalName());
+        //set.add(PrefKey.class.getCanonicalName());
         set.add(PrefsConfig.class.getCanonicalName());
         return set;
     }
@@ -47,44 +39,36 @@ public class GendalfProcessor extends AbstractProcessor {
         return SourceVersion.RELEASE_7;
     }
 
+    @SuppressWarnings("Convert2streamapi")
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        Map<String, ClassData> data = new HashMap<>();
-
         // todo some validation here
-
-        for (Element e : roundEnv.getElementsAnnotatedWith(PrefKey.class)) {
-            if (e instanceof VariableElement) {
-                final TypeElement parent = (TypeElement) e.getEnclosingElement();
-                String cls = parent.getAnnotation(PrefsConfig.class).value();
-                if (!data.containsKey(cls)) {
-                    String filename = Utils.toUnderScore(cls);
-                    //String packageName = Utils.getPackageName(parent);
-                    data.put(cls, new ClassData(cls, filename));
+        for (Element e : roundEnv.getElementsAnnotatedWith(PrefsConfig.class)) {
+            if (e instanceof TypeElement) {
+                String cls = e.getAnnotation(PrefsConfig.class).value();
+                List<? extends Element> childs = e.getEnclosedElements();
+                List<VariableElement> vars = new ArrayList<>();
+                for (Element f : childs) {
+                    if (f instanceof VariableElement) {
+                        vars.add((VariableElement) f);
+                    }
                 }
-                data.get(cls).elements.add((VariableElement) e);
+                String filename = Utils.toUnderScore(cls);
+                String packageName = Utils.getPackageName((TypeElement) e);
+                ClassData data = new ClassData(cls, filename, (vars));
+                processPrefKeys(data, packageName);
             } else
-                messager.error(e, "Annotation should be assigned to field");
-
-        }
-
-        if (data.size() != 0) {
-            data.values().forEach(this::processPrefKeys);
+                messager.error(e, "Annotation should be assigned to class");
         }
 
         return true;
     }
 
 
-    private void processPrefKeys(ClassData data) {
+    private void processPrefKeys(ClassData data, String packageName) {
         try {
             if (data.elements.size() == 0)
                 return;
-
-            final VariableElement e = data.elements.get(0);
-            final TypeElement parent = (TypeElement) e.getEnclosingElement();
-            String packageName = Utils.getPackageName(parent);
-            //final String className = Utils.getClassName(parent);
 
             CodeGenerator codeGenerator = new CodeGenerator(data);
             TypeSpec generatedClass = codeGenerator.generateClass();

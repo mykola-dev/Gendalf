@@ -5,7 +5,7 @@ apply plugin: 'com.jfrog.bintray'
 dependencies {
     compile project(':api')
     compile 'com.google.auto.service:auto-service:1.0-rc2'
-    compile 'com.squareup:javapoet:1.2.0'
+    compile 'com.squareup:javapoet:1.5.1'
 }
 
 // bintray shit
