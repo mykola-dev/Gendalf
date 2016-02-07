@@ -1,14 +1,11 @@
 package ds.gendalf;
 
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.*;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.TypeMirror;
+import javax.lang.model.element.*;
+import javax.lang.model.type.*;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
@@ -74,7 +71,7 @@ final class Utils {
     }
 
     public static String toUnderScore(String s) {
-        return s.replaceAll("([a-z])([A-Z])","$1_$2").toLowerCase();
+        return s.replaceAll("([a-z])([A-Z])", "$1_$2").toLowerCase();
     }
 
     public static boolean isUpperCase(String s) {
@@ -121,4 +118,32 @@ final class Utils {
 
 
     public static String getPrefsSetter(final VariableElement e) {return appendPrefixTo(getPrefsMethodSuffix(getFieldSimpleType(e)), "put");}
+
+    public static ConverterData createConverterData(VariableElement e) {
+        CustomPref customPref = e.getAnnotation(CustomPref.class);
+        if (customPref != null) {
+            try {
+                customPref.value(); // always fail
+            } catch (MirroredTypeException mte) {
+                TypeMirror mirror = mte.getTypeMirror();
+                TypeElement converterClassElement = (TypeElement) Utils.typeUtils.asElement(mirror);
+                TypeMirror iface = converterClassElement.getInterfaces().get(0);
+                ClassName converterClass = ClassName.get(converterClassElement);
+                ClassName converterInterface = ClassName.get((TypeElement) Utils.typeUtils.asElement(iface));
+                final TypeMirror typeAMirror = ((DeclaredType) iface).getTypeArguments().get(0);
+                final TypeMirror typeBMirror = ((DeclaredType) iface).getTypeArguments().get(1);
+                TypeName typeAName = TypeName.get(typeAMirror);
+                TypeName typeBName = TypeName.get(typeBMirror);
+
+                TypeName parametrizedType = ParameterizedTypeName.get(converterInterface, typeAName, typeBName);
+                String s = converterClass.simpleName();
+                String name = s.substring(0, 1).toLowerCase() + s.substring(1);
+                FieldSpec converter = FieldSpec.builder(parametrizedType, name, Modifier.PRIVATE)
+                                               .initializer("new $T()", converterClass)
+                                               .build();
+                return new ConverterData(converter, typeAMirror, typeBMirror);
+            }
+        }
+        return null;
+    }
 }

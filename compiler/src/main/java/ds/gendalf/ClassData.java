@@ -11,24 +11,12 @@ public class ClassData {
     public static final String DEFAULT_PREFS = "gendalf_prefs";
     public static final String DEFAULT_PACKAGE = "ds.gendalf.generated";
 
-    private String configuratorClassName;
-    private String packageName;
     private String className;
     private String fileName;
 
 
     public String getFileName() {
         return fileName != null ? fileName : DEFAULT_PREFS;
-    }
-
-
-    public String getConfiguratorClassName() {
-        return configuratorClassName;
-    }
-
-
-    public String getPackageName() {
-        return packageName != null ? packageName : DEFAULT_PACKAGE;
     }
 
 
@@ -46,14 +34,10 @@ public class ClassData {
     }
 
     public ClassData(
-            final String configuratorClassName,
             final String generatedClassName,
-            final String packageName,
             final String filename,
             final List<VariableElement> elements) {
-        this.configuratorClassName = configuratorClassName;
         this.className = generatedClassName;
-        this.packageName = packageName;
         this.fileName = filename;
         this.elements = elements;
     }

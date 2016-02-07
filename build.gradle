@@ -17,7 +17,7 @@ allprojects {
 
 ext {
     publishedGroupId = 'ds.gendalf'
-    libraryVersion = '1.0.0'
+    libraryVersion = '1.1.0'
 }
 
 
