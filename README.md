@@ -39,8 +39,8 @@ apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
 
-    compile 'ds.gendalf:gendalf:1.1.0'
-    apt 'ds.gendalf:compiler:1.1.0'
+    compile 'ds.gendalf:gendalf:1.1.1'
+    apt 'ds.gendalf:compiler:1.1.1'
 
 }
 ```
