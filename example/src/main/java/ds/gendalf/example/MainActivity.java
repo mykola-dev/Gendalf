@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import java.util.Arrays;
+import java.util.*;
 
 import ds.gendalf.example.data.Guitar;
 
@@ -69,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
 
         // direct prefs access
         SharedPreferences rawPrefs = ap.getPrefs();
+
+        Log.v("all keys:",AppPrefs.KEYS.toString());
+
 
     }
 

@@ -32,11 +32,11 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile 'com.facebook.stetho:stetho:+'
 
-    //compile project(':api')
-    //apt project(':compiler')
+    compile project(':api')
+    apt project(':compiler')
 
-    compile "ds.gendalf:gendalf:${project.libraryVersion}"
-    apt "ds.gendalf:compiler:${project.libraryVersion}"     // or use 'apt' for non kotlin
+    //compile "ds.gendalf:gendalf:${project.libraryVersion}"
+    //apt "ds.gendalf:compiler:${project.libraryVersion}"     // or use 'apt' for non kotlin
 
 }
 

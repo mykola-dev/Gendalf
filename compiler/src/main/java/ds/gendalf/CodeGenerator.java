@@ -41,6 +41,8 @@ final class CodeGenerator {
         return TypeSpec.classBuilder(data.getClassName())
                        .addField(prefs, "prefs", Modifier.PRIVATE)
                        .addField(editor, "edit", Modifier.PRIVATE)
+                       .addField(allKeysField())
+                       .addStaticBlock(allKeysInit())
                        .addFields(converters.values())
                        .addMethod(constructor())
                        .addMethod(with())
@@ -51,6 +53,7 @@ final class CodeGenerator {
                        .addMethod(clear())
                        .addMethod(getPrefs())
                        .addMethod(getFileName())
+                       //.addMethod(getAllKeys())
                        .build();
     }
 
@@ -119,9 +122,8 @@ final class CodeGenerator {
     private MethodSpec customGetter(VariableElement e, ConverterData cd) {
         final String fieldName = e.getSimpleName().toString();
         TypeMirror fieldType = e.asType();
-        if (!fieldType.toString().equals(cd.typeAMirror.toString())){
-            throw new ClassCastException(String.format("Field type %s and converter type %s don't match",fieldType.toString(),cd.typeAMirror.toString()));
-            //return null;
+        if (!fieldType.toString().equals(cd.typeAMirror.toString())) {
+            throw new ClassCastException(String.format("Field type %s and converter type %s don't match", fieldType.toString(), cd.typeAMirror.toString()));
         }
         final TypeName returnType = TypeName.get(cd.typeAMirror);
         final ClassName prefType = ClassName.get((TypeElement) Utils.typeUtils.asElement(cd.typeBMirror));
@@ -197,5 +199,32 @@ final class CodeGenerator {
                          .returns(map)
                          .build();
 
+    }
+
+/*    private MethodSpec getAllKeys() {
+        final ParameterizedTypeName list = ParameterizedTypeName.get(ClassName.get("java.util", "List"), Utils.STRING);
+        return MethodSpec.methodBuilder("getAllKeys")
+                         .addModifiers(PUBLIC, FINAL)
+                         .addStatement("return KEYS")
+                         .returns(list)
+                         .build();
+
+    }*/
+
+    private FieldSpec allKeysField() {
+        return FieldSpec.builder(ParameterizedTypeName.get(ClassName.get("java.util", "Map"), Utils.STRING, ClassName.get("java.lang", "Class")),
+                "KEYS", PUBLIC, STATIC, FINAL)
+                        .initializer("new $T()", ClassName.get("java.util", "HashMap"))
+                        .addJavadoc("This field can be used for automatic PreferenceScreen generation")
+                        .build();
+    }
+
+    private CodeBlock allKeysInit() {
+        CodeBlock.Builder codeBlock = CodeBlock.builder();
+        for (VariableElement e : data.elements) {
+            final String fieldName = e.getSimpleName().toString();
+            codeBlock.addStatement("KEYS.put($S, $L.class)", fieldName, Utils.getFieldSimpleType(e));
+        }
+        return codeBlock.build();
     }
 }
