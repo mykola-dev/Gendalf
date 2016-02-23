@@ -63,8 +63,7 @@ public interface PrefsConfigurator {
 Run 'make' and then you can use generated helper like
 ```
 Gendalf.with(this)
-       .setUserName("Luke")
-       .commit();
+       .setUserName("Luke");
 ```
 
 ### Custom Type prefs
