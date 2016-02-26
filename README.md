@@ -3,7 +3,7 @@
 
 This lib produces some sugar and type safety for Android Shared Preferences:
 
-```
+```java
 // before
 final String ageKey = "age";
 final String userNameKey = "age";
@@ -25,7 +25,7 @@ Gendalf.with(this)
 ### Basic usage
 
 Add gradle dependency:
-```
+```groovy
 buildscript {
     repositories {
         jcenter()
@@ -46,7 +46,7 @@ dependencies {
 ```
 
 Generate prefs model:
-```
+```groovy
 @PrefsConfig("Gendalf")
 public interface PrefsConfigurator {
 	String city = "Kharkiv";
@@ -61,7 +61,7 @@ public interface PrefsConfigurator {
 ```
 
 Run 'make' and then you can use generated helper like
-```
+```groovy
 Gendalf.with(this)
        .setUserName("Luke");
 ```
@@ -69,7 +69,7 @@ Gendalf.with(this)
 ### Custom Type prefs
 
 Add annotation @CustomPref and provide converter class:
-```
+```groovy
 @PrefsConfig("AppPrefs")
 interface AppPrefsConfigurator {
 	...
@@ -78,7 +78,7 @@ interface AppPrefsConfigurator {
 ```
 
 Implement converter:
-```
+```groovy
 public class GuitarToStringConverter implements Converter<Guitar, String> {
     @Override
     public String serialize(Guitar g) {
@@ -95,7 +95,7 @@ public class GuitarToStringConverter implements Converter<Guitar, String> {
 Actually you can use any serializer. For example GSON.
 
 Now you can use prefs like:
-```
+```groovy
  AppPrefs.with(this)
          .setGuitar(new Guitar("electric", 99.95f, Color.RED))
 ```
