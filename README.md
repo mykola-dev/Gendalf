@@ -6,7 +6,7 @@ This lib produces some sugar and type safety for Android Shared Preferences:
 ```java
 // before
 final String ageKey = "age";
-final String userNameKey = "age";
+final String userNameKey = "userName";
 final String adminKey = "admin";
 SharedPreferences prefs = getSharedPreferences("custom_prefs", Context.MODE_PRIVATE);
 SharedPreferences.Editor editor = prefs.edit();
