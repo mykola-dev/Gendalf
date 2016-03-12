@@ -132,12 +132,13 @@ final class Utils {
                 ClassName converterInterface = ClassName.get((TypeElement) Utils.typeUtils.asElement(iface));
                 final TypeMirror typeAMirror = ((DeclaredType) iface).getTypeArguments().get(0);
                 final TypeMirror typeBMirror = ((DeclaredType) iface).getTypeArguments().get(1);
-                TypeName typeAName = TypeName.get(typeAMirror);
+                TypeName typeAName = ClassName.get(e.asType());
                 TypeName typeBName = TypeName.get(typeBMirror);
 
                 TypeName parametrizedType = ParameterizedTypeName.get(converterInterface, typeAName, typeBName);
-                String s = converterClass.simpleName();
-                String name = s.substring(0, 1).toLowerCase() + s.substring(1);
+                String fName = e.getSimpleName().toString();
+                fName = fName.substring(0, 1).toLowerCase() + fName.substring(1);
+                String name = fName + converterClass.simpleName();
                 FieldSpec converter = FieldSpec.builder(parametrizedType, name, Modifier.PRIVATE)
                                                .initializer("new $T()", converterClass)
                                                .build();

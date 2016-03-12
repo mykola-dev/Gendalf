@@ -15,9 +15,10 @@ interface AppPrefsConfigurator {
     String os = null;
     String PREF_SECRET = "12345678";
     @CustomPref(StringListConverter.class) List<String> names = null;   // default value for complex objects is not supported
-    @CustomPref(StringListConverter.class) List<String> colors = null;
     @CustomPref(CustomEnumConverter.class) List<Direction> directions = null;
     @CustomPref(GuitarToStringConverter.class) Guitar guitar = null;
+    @CustomPref(GsonConverter.class) List<Guitar> guitars = null;
+    @CustomPref(GsonConverter.class) List<String> colors = null;
 }
 
 @PrefsConfig("UserPrefs")

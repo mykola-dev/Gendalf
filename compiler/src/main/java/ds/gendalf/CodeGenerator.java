@@ -201,16 +201,6 @@ final class CodeGenerator {
 
     }
 
-/*    private MethodSpec getAllKeys() {
-        final ParameterizedTypeName list = ParameterizedTypeName.get(ClassName.get("java.util", "List"), Utils.STRING);
-        return MethodSpec.methodBuilder("getAllKeys")
-                         .addModifiers(PUBLIC, FINAL)
-                         .addStatement("return KEYS")
-                         .returns(list)
-                         .build();
-
-    }*/
-
     private FieldSpec allKeysField() {
         return FieldSpec.builder(ParameterizedTypeName.get(ClassName.get("java.util", "Map"), Utils.STRING, ClassName.get("java.lang", "Class")),
                 "KEYS", PUBLIC, STATIC, FINAL)
