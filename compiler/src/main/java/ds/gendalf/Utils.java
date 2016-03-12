@@ -123,7 +123,7 @@ final class Utils {
         CustomPref customPref = e.getAnnotation(CustomPref.class);
         if (customPref != null) {
             try {
-                customPref.value(); // always fail
+                customPref.value(); // always fails
             } catch (MirroredTypeException mte) {
                 TypeMirror mirror = mte.getTypeMirror();
                 TypeElement converterClassElement = (TypeElement) Utils.typeUtils.asElement(mirror);
@@ -137,7 +137,6 @@ final class Utils {
 
                 TypeName parametrizedType = ParameterizedTypeName.get(converterInterface, typeAName, typeBName);
                 String fName = e.getSimpleName().toString();
-                fName = fName.substring(0, 1).toLowerCase() + fName.substring(1);
                 String name = fName + converterClass.simpleName();
                 FieldSpec converter = FieldSpec.builder(parametrizedType, name, Modifier.PRIVATE)
                                                .initializer("new $T()", converterClass)
