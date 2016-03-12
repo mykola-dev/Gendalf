@@ -3,10 +3,10 @@
 
 This lib produces some sugar and type safety for Android Shared Preferences:
 
-```
+```java
 // before
 final String ageKey = "age";
-final String userNameKey = "age";
+final String userNameKey = "userName";
 final String adminKey = "admin";
 SharedPreferences prefs = getSharedPreferences("custom_prefs", Context.MODE_PRIVATE);
 SharedPreferences.Editor editor = prefs.edit();
@@ -25,7 +25,7 @@ Gendalf.with(this)
 ### Basic usage
 
 Add gradle dependency:
-```
+```groovy
 buildscript {
     repositories {
         jcenter()
@@ -39,14 +39,14 @@ apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
 
-    compile 'ds.gendalf:gendalf:1.1.0'
-    apt 'ds.gendalf:compiler:1.1.0'
+    compile 'ds.gendalf:gendalf:1.1.1'
+    apt 'ds.gendalf:compiler:1.1.1'
 
 }
 ```
 
 Generate prefs model:
-```
+```groovy
 @PrefsConfig("Gendalf")
 public interface PrefsConfigurator {
 	String city = "Kharkiv";
@@ -61,16 +61,15 @@ public interface PrefsConfigurator {
 ```
 
 Run 'make' and then you can use generated helper like
-```
+```groovy
 Gendalf.with(this)
-       .setUserName("Luke")
-       .commit();
+       .setUserName("Luke");
 ```
 
 ### Custom Type prefs
 
 Add annotation @CustomPref and provide converter class:
-```
+```groovy
 @PrefsConfig("AppPrefs")
 interface AppPrefsConfigurator {
 	...
@@ -79,7 +78,7 @@ interface AppPrefsConfigurator {
 ```
 
 Implement converter:
-```
+```groovy
 public class GuitarToStringConverter implements Converter<Guitar, String> {
     @Override
     public String serialize(Guitar g) {
@@ -96,7 +95,7 @@ public class GuitarToStringConverter implements Converter<Guitar, String> {
 Actually you can use any serializer. For example GSON.
 
 Now you can use prefs like:
-```
+```groovy
  AppPrefs.with(this)
          .setGuitar(new Guitar("electric", 99.95f, Color.RED))
 ```
