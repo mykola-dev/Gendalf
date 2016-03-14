@@ -1,4 +1,4 @@
-## Gendalf 
+﻿## Gendalf 
 ##### Another one library with weird name
 
 This lib produces some sugar and type safety for Android Shared Preferences:
@@ -39,8 +39,8 @@ apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
 
-    compile 'ds.gendalf:gendalf:1.1.1'
-    apt 'ds.gendalf:compiler:1.1.1'
+    compile 'ds.gendalf:gendalf:1.1.2'
+    apt 'ds.gendalf:compiler:1.1.2'
 
 }
 ```
