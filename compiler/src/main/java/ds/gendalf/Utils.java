@@ -130,7 +130,7 @@ final class Utils {
                 TypeMirror iface = converterClassElement.getInterfaces().get(0);
                 ClassName converterClass = ClassName.get(converterClassElement);
                 ClassName converterInterface = ClassName.get((TypeElement) Utils.typeUtils.asElement(iface));
-                final TypeMirror typeAMirror = ((DeclaredType) iface).getTypeArguments().get(0);
+                final TypeMirror typeAMirror = e.asType();
                 final TypeMirror typeBMirror = ((DeclaredType) iface).getTypeArguments().get(1);
                 TypeName typeAName = ClassName.get(e.asType());
                 TypeName typeBName = TypeName.get(typeBMirror);
