@@ -29,7 +29,7 @@ final class CodeGenerator {
         for (VariableElement e : data.elements) {
             final String fieldName = e.getSimpleName().toString();
             //final String keyName = e.getSimpleName().toString();
-            keys.put(e, FieldSpec.builder(Utils.STRING, Utils.toKey(fieldName), Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+            keys.put(e, FieldSpec.builder(Utils.STRING, Utils.toKey(fieldName), PUBLIC, STATIC, FINAL)
                                  .initializer("$S", fieldName)
                                  .build()
             );
@@ -49,8 +49,8 @@ final class CodeGenerator {
         }
 
         return TypeSpec.classBuilder(data.getClassName())
-                       .addField(prefs, "prefs", Modifier.PRIVATE)
-                       .addField(editor, "edit", Modifier.PRIVATE)
+                       .addField(prefs, "prefs", PRIVATE)
+                       .addField(editor, "edit", PRIVATE)
                        .addField(allKeysField())
                        .addFields(keys.values())
                        .addStaticBlock(allKeysInit())
@@ -62,6 +62,7 @@ final class CodeGenerator {
                        .addMethod(commit())
                        .addMethod(getAll())
                        .addMethod(clear())
+                       .addMethod(applyDefaults())
                        .addMethod(getPrefs())
                        .addMethod(getFileName())
                        .build();
@@ -95,7 +96,7 @@ final class CodeGenerator {
 
     private MethodSpec constructor() {
         return MethodSpec.constructorBuilder()
-                         .addModifiers(Modifier.PRIVATE)
+                         .addModifiers(PRIVATE)
                          .addParameter(context, "ctx")
                          .addStatement("prefs = ctx.getSharedPreferences($S, Context.MODE_PRIVATE)", data.getFileName())
                          .addStatement("edit = prefs.edit()")
@@ -232,5 +233,34 @@ final class CodeGenerator {
             codeBlock.addStatement("KEYS.put($L, $L.class)", keyName, Utils.getFieldSimpleType(e));
         }
         return codeBlock.build();
+    }
+
+    private MethodSpec applyDefaults() {
+        MethodSpec.Builder m = MethodSpec.methodBuilder("applyDefaults")
+                                         .addJavadoc("Explicitly apply all default values")
+                                         .addModifiers(PUBLIC, FINAL);
+        List<VariableElement> elements = data.elements;
+        for (int i = 0; i < elements.size(); i++) {
+            VariableElement e = elements.get(i);
+            CustomPref customPref = e.getAnnotation(CustomPref.class);
+            if (customPref != null)
+                continue;
+
+            final TypeName type = ClassName.get(e.asType());
+            Object defaultValue = Utils.provideDefaultValue(type, e);
+            if (defaultValue == null)
+                continue;
+
+            final String fieldName = e.getSimpleName().toString();
+            final String keyName = keys.get(e).name;
+            final String prefsSetterName = Utils.getPrefsSetter(e);
+            m.beginControlFlow("if (!prefs.contains($L))", keyName);
+            m.addStatement("edit.$L($L, $L)", prefsSetterName, keyName, defaultValue);
+            m.endControlFlow();
+        }
+        m.addStatement("edit.apply()");
+
+        return m.build();
+
     }
 }

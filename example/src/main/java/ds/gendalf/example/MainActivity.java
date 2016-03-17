@@ -26,8 +26,8 @@ public class MainActivity extends AppCompatActivity {
         final String userNameKey = "userName";
         final String adminKey = "admin";
         final String cityKey = "city";
-        SharedPreferences userPrefs = this.getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = userPrefs.edit();
+        SharedPreferences userSharedPrefs = this.getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = userSharedPrefs.edit();
         editor.putInt(idKey, 100500);
         editor.putInt(ageKey, 12);
         editor.putString(userNameKey, "Luke");
@@ -38,9 +38,9 @@ public class MainActivity extends AppCompatActivity {
         final String osKey = "os";
         final String versionKey = "version";
         final String secretKey = "PREF_SECRET";
-        SharedPreferences appPrefs = this.getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
-        editor = appPrefs.edit();
-        if (appPrefs.contains(osKey)) {
+        SharedPreferences appSharedPrefs = this.getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
+        editor = appSharedPrefs.edit();
+        if (appSharedPrefs.contains(osKey)) {
             editor.clear();
             editor.putString(osKey, "Windows");
             editor.putString(versionKey, "1995");
@@ -56,8 +56,8 @@ public class MainActivity extends AppCompatActivity {
                  .setCity(null)
                  .setAdmin(true);
 
-        AppPrefs ap = AppPrefs.with(this);
-        ap.clearAll()
+        AppPrefs appPrefs = AppPrefs.with(this);
+        appPrefs.clearAll()
           .setOs("Windows")
           .setVersion("1995")
           .setNames(Arrays.asList("Geralt", "Triss", "Yennefer"))
@@ -65,11 +65,12 @@ public class MainActivity extends AppCompatActivity {
           .setGuitar(new Guitar("electric", 99.95f, Color.RED))
           .setPrefSecret("00000000");
 
-        Log.v("directions", ap.fetchDirections().toString());
+        Log.v("directions", appPrefs.fetchDirections().toString());
 
         // direct prefs access
-        SharedPreferences rawPrefs = ap.getPrefs();
+        SharedPreferences rawPrefs = appPrefs.getPrefs();
 
+        appPrefs.applyDefaults();
 
         Log.v("all keys", AppPrefs.KEYS.toString());
         Log.v("colors type", AppPrefs.KEYS.get(AppPrefs.KEY_COLORS).getSimpleName());
