@@ -74,6 +74,10 @@ final class Utils {
         return s.replaceAll("([a-z])([A-Z])", "$1_$2").toLowerCase();
     }
 
+    public static String toKey(String s) {
+        return "KEY_"+s.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase();
+    }
+
     public static boolean isUpperCase(String s) {
         for (int i = 0; i < s.length(); i++) {
             if (Character.isLowerCase(s.charAt(i))) {

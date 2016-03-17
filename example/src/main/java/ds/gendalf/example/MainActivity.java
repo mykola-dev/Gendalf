@@ -70,7 +70,9 @@ public class MainActivity extends AppCompatActivity {
         // direct prefs access
         SharedPreferences rawPrefs = ap.getPrefs();
 
-        Log.v("all keys:",AppPrefs.KEYS.toString());
+
+        Log.v("all keys", AppPrefs.KEYS.toString());
+        Log.v("colors type", AppPrefs.KEYS.get(AppPrefs.KEY_COLORS).getSimpleName());
 
 
     }

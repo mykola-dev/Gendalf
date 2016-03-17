@@ -14,16 +14,13 @@ public class ClassData {
     private String className;
     private String fileName;
 
-
     public String getFileName() {
         return fileName != null ? fileName : DEFAULT_PREFS;
     }
 
-
     public String getClassName() {
         return className != null ? className : DEFAULT_CLASS;
     }
-
 
     public List<VariableElement> elements = new ArrayList<>();
 

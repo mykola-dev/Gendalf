@@ -12,6 +12,7 @@ import static javax.lang.model.element.Modifier.*;
 final class CodeGenerator {
 
     private ClassData data;
+    private Map<VariableElement, FieldSpec> keys;
 
     private ClassName context = ClassName.get("android.content", "Context");
     private ClassName prefs = ClassName.get("android.content", "SharedPreferences");
@@ -24,7 +25,15 @@ final class CodeGenerator {
 
     TypeSpec generateClass() {
         List<MethodSpec> methods = new ArrayList<>();
+        keys = new HashMap<>();
         for (VariableElement e : data.elements) {
+            final String fieldName = e.getSimpleName().toString();
+            //final String keyName = e.getSimpleName().toString();
+            keys.put(e, FieldSpec.builder(Utils.STRING, Utils.toKey(fieldName), Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+                                 .initializer("$S", fieldName)
+                                 .build()
+            );
+
             ConverterData converter = Utils.createConverterData(e);
             if (converter != null) {
                 if (!converters.containsKey(converter.field.name))
@@ -35,6 +44,7 @@ final class CodeGenerator {
                 methods.add(getter(e));
                 methods.add(setter(e));
             }
+
             methods.add(contains(e));
         }
 
@@ -42,6 +52,7 @@ final class CodeGenerator {
                        .addField(prefs, "prefs", Modifier.PRIVATE)
                        .addField(editor, "edit", Modifier.PRIVATE)
                        .addField(allKeysField())
+                       .addFields(keys.values())
                        .addStaticBlock(allKeysInit())
                        .addFields(converters.values())
                        .addMethod(constructor())
@@ -53,12 +64,12 @@ final class CodeGenerator {
                        .addMethod(clear())
                        .addMethod(getPrefs())
                        .addMethod(getFileName())
-                       //.addMethod(getAllKeys())
                        .build();
     }
 
     private MethodSpec getFileName() {
         return MethodSpec.methodBuilder("getFileName")
+                         .addJavadoc("Returns prefs file name")
                          .addModifiers(PUBLIC, FINAL)
                          .addStatement("return $S", data.getFileName())
                          .returns(ClassName.get(String.class))
@@ -93,13 +104,14 @@ final class CodeGenerator {
 
     private MethodSpec setter(VariableElement e) {
         final String fieldName = e.getSimpleName().toString();
+        final String keyName = keys.get(e).name;
         final String setterName = Utils.appendPrefixTo(Utils.toCamelCase(fieldName), "set");
         final TypeName type = ClassName.get(e.asType());
         final String prefsSetterName = Utils.getPrefsSetter(e);
         return MethodSpec.methodBuilder(setterName)
                          .addModifiers(PUBLIC, FINAL)
                          .addParameter(type, fieldName)
-                         .addStatement("edit.$L($S, $L)", prefsSetterName, fieldName, fieldName)
+                         .addStatement("edit.$L($L, $L)", prefsSetterName, keyName, fieldName)
                          .addStatement("edit.apply()")
                          .addStatement("return this")
                          .returns(ClassName.bestGuess(data.getClassName()))
@@ -108,19 +120,21 @@ final class CodeGenerator {
 
     private MethodSpec getter(VariableElement e) {
         final String fieldName = e.getSimpleName().toString();
+        final String keyName = keys.get(e).name;
         final TypeName type = ClassName.get(e.asType());
         final String prefix = (type == TypeName.BOOLEAN) ? "is" : "get";
         final String getterName = Utils.appendPrefixTo(Utils.toCamelCase(fieldName), prefix);
         final String prefsGetterName = Utils.getPrefsGetter(e);
         return MethodSpec.methodBuilder(getterName)
                          .addModifiers(PUBLIC, FINAL)
-                         .addStatement("return prefs.$L($S, $L)", prefsGetterName, fieldName, Utils.provideDefaultValue(type, e))
+                         .addStatement("return prefs.$L($L, $L)", prefsGetterName, keyName, Utils.provideDefaultValue(type, e))
                          .returns(type)
                          .build();
     }
 
     private MethodSpec customGetter(VariableElement e, ConverterData cd) {
         final String fieldName = e.getSimpleName().toString();
+        final String keyName = keys.get(e).name;
         TypeMirror fieldType = e.asType();
         if (!fieldType.toString().equals(cd.typeAMirror.toString())) {
             throw new ClassCastException(String.format("Field type %s and converter type %s don't match", fieldType.toString(), cd.typeAMirror.toString()));
@@ -132,7 +146,7 @@ final class CodeGenerator {
         final String prefsGetterName = "get" + Utils.getPrefsMethodSuffix(prefType.simpleName());
         return MethodSpec.methodBuilder(getterName)
                          .addModifiers(PUBLIC, FINAL)
-                         .addStatement("return $L.deserialize(prefs.$L($S, $L))", cd.field.name, prefsGetterName, fieldName, Utils.provideDefaultValue(prefType, e))
+                         .addStatement("return $L.deserialize(prefs.$L($L, $L))", cd.field.name, prefsGetterName, keyName, Utils.provideDefaultValue(prefType, e))
                          .returns(returnType)
                          .addJavadoc("You need to cache this value manually to avoid performance hit during deserialization")
                          .build();
@@ -140,6 +154,7 @@ final class CodeGenerator {
 
     private MethodSpec customSetter(VariableElement e, ConverterData cd) {
         final String fieldName = e.getSimpleName().toString();
+        final String keyName = keys.get(e).name;
         final TypeName paramType = TypeName.get(cd.typeAMirror);
         final ClassName prefType = ClassName.get((TypeElement) Utils.typeUtils.asElement(cd.typeBMirror));
         final String setterName = Utils.appendPrefixTo(Utils.toCamelCase(fieldName), "set");
@@ -148,7 +163,7 @@ final class CodeGenerator {
         return MethodSpec.methodBuilder(setterName)
                          .addModifiers(PUBLIC, FINAL)
                          .addParameter(paramType, fieldName)
-                         .addStatement("edit.$L($S, $L.serialize($L))", prefsSetterName, fieldName, cd.field.name, fieldName)
+                         .addStatement("edit.$L($L, $L.serialize($L))", prefsSetterName, keyName, cd.field.name, fieldName)
                          .addStatement("edit.apply()")
                          .addStatement("return this")
                          .returns(ClassName.bestGuess(data.getClassName()))
@@ -180,10 +195,11 @@ final class CodeGenerator {
 
     private MethodSpec contains(final VariableElement e) {
         final String fieldName = e.getSimpleName().toString();
+        final String keyName = keys.get(e).name;
         final String methodName = Utils.appendPrefixTo(Utils.toCamelCase(fieldName), "contains");
         return MethodSpec.methodBuilder(methodName)
                          .addModifiers(PUBLIC, FINAL)
-                         .addStatement("return prefs.contains($S)", fieldName)
+                         .addStatement("return prefs.contains($L)", keyName)
                          .returns(TypeName.BOOLEAN)
                          .build();
     }
@@ -212,8 +228,8 @@ final class CodeGenerator {
     private CodeBlock allKeysInit() {
         CodeBlock.Builder codeBlock = CodeBlock.builder();
         for (VariableElement e : data.elements) {
-            final String fieldName = e.getSimpleName().toString();
-            codeBlock.addStatement("KEYS.put($S, $L.class)", fieldName, Utils.getFieldSimpleType(e));
+            final String keyName = keys.get(e).name;
+            codeBlock.addStatement("KEYS.put($L, $L.class)", keyName, Utils.getFieldSimpleType(e));
         }
         return codeBlock.build();
     }
