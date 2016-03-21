@@ -28,7 +28,6 @@ final class CodeGenerator {
         keys = new HashMap<>();
         for (VariableElement e : data.elements) {
             final String fieldName = e.getSimpleName().toString();
-            //final String keyName = e.getSimpleName().toString();
             keys.put(e, FieldSpec.builder(Utils.STRING, Utils.toKey(fieldName), PUBLIC, STATIC, FINAL)
                                  .initializer("$S", fieldName)
                                  .build()
@@ -189,6 +188,7 @@ final class CodeGenerator {
         return MethodSpec.methodBuilder("clearAll")
                          .addModifiers(PUBLIC, FINAL)
                          .addStatement("edit.clear()")
+                         .addStatement("edit.commit()")
                          .addStatement("return this")
                          .returns(ClassName.bestGuess(data.getClassName()))
                          .build();

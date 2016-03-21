@@ -36,7 +36,7 @@ final class Utils {
     }
 
 
-    public static String getFieldSimpleType(final VariableElement e) {
+    public static String getFieldSimpleType(final Element e) {
         final TypeMirror tm = e.asType();
         TypeElement te = (TypeElement) typeUtils.asElement(tm);
         if (te == null)   // primitive
@@ -75,7 +75,7 @@ final class Utils {
     }
 
     public static String toKey(String s) {
-        return "KEY_"+s.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase();
+        return "KEY_" + s.replaceAll("([a-z])([A-Z])", "$1_$2").toUpperCase();
     }
 
     public static boolean isUpperCase(String s) {
@@ -131,21 +131,35 @@ final class Utils {
             } catch (MirroredTypeException mte) {
                 TypeMirror mirror = mte.getTypeMirror();
                 TypeElement converterClassElement = (TypeElement) Utils.typeUtils.asElement(mirror);
-                TypeMirror iface = converterClassElement.getInterfaces().get(0);
+                TypeMirror declaredType;
+                if (converterClassElement.getInterfaces().size() != 0)
+                    declaredType = converterClassElement.getInterfaces().get(0);
+                else {
+                    declaredType = converterClassElement.getSuperclass();
+                }
                 ClassName converterClass = ClassName.get(converterClassElement);
-                ClassName converterInterface = ClassName.get((TypeElement) Utils.typeUtils.asElement(iface));
+                ClassName iConverter = ClassName.get(elementUtils.getTypeElement(Converter.class.getCanonicalName()));
                 final TypeMirror typeAMirror = e.asType();
-                final TypeMirror typeBMirror = ((DeclaredType) iface).getTypeArguments().get(1);
+                final TypeMirror typeBMirror = ((DeclaredType) declaredType).getTypeArguments().get(1);
                 TypeName typeAName = ClassName.get(e.asType());
                 TypeName typeBName = TypeName.get(typeBMirror);
 
-                TypeName parametrizedType = ParameterizedTypeName.get(converterInterface, typeAName, typeBName);
+                TypeName parametrizedType = ParameterizedTypeName.get(iConverter, typeAName, typeBName);
                 String fName = e.getSimpleName().toString();
                 String name = fName + converterClass.simpleName();
-                FieldSpec converter = FieldSpec.builder(parametrizedType, name, Modifier.PRIVATE)
-                                               .initializer("new $T()", converterClass)
-                                               .build();
-                return new ConverterData(converter, typeAMirror, typeBMirror);
+                final FieldSpec.Builder builder = FieldSpec.builder(parametrizedType, name, Modifier.PRIVATE);
+
+                boolean isTypedConverter = Utils.typeUtils.asElement(converterClassElement.getSuperclass()).getSimpleName().contentEquals("TypedConverter");
+                if (isTypedConverter)
+                    builder.initializer(
+                            "new $T($L.class, $L.class)",
+                            converterClass,
+                            getFieldSimpleType(typeUtils.asElement(typeAMirror)),
+                            getFieldSimpleType(typeUtils.asElement(typeBMirror))
+                    );
+                else
+                    builder.initializer("new $T()", converterClass);
+                return new ConverterData(builder.build(), typeAMirror, typeBMirror);
             }
         }
         return null;

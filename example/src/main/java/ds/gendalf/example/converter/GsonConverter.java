@@ -1,24 +1,24 @@
 package ds.gendalf.example.converter;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
+import ds.gendalf.TypedConverter;
 
-import ds.gendalf.Converter;
-
-public class GsonConverter<T> implements Converter<T, String> {
+public class GsonConverter<T> extends TypedConverter<T, String> {
 
     Gson gson = new Gson();
 
+    public GsonConverter(Class<T> srcClass, Class<String> dstClass) {
+        super(srcClass, dstClass);
+    }
+
     @Override
     public String serialize(T obj) {
-        return gson.toJson(obj);
+        return gson.toJson(obj,getSrcClass());
     }
 
     @Override
     public T deserialize(String json) {
-        Type t = new TypeToken<T>() {}.getType();
-        return gson.fromJson(json, t);
+        return gson.fromJson(json, getSrcClass());
     }
 }

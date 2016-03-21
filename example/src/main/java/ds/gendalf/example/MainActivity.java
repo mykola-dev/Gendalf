@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import java.util.*;
+import java.util.Arrays;
 
 import ds.gendalf.example.data.Guitar;
 
@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
                  .setAdmin(true);
 
         AppPrefs appPrefs = AppPrefs.with(this);
+
         appPrefs.clearAll()
           .setOs("Windows")
           .setVersion("1995")
@@ -71,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences rawPrefs = appPrefs.getPrefs();
 
         appPrefs.applyDefaults();
+
+        Log.v("json guitar",appPrefs.fetchGuitar().type);
 
         Log.v("all keys", AppPrefs.KEYS.toString());
         Log.v("colors type", AppPrefs.KEYS.get(AppPrefs.KEY_COLORS).getSimpleName());

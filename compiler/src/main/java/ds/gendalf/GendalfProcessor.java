@@ -29,7 +29,6 @@ public class GendalfProcessor extends AbstractProcessor {
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         Set<String> set = new LinkedHashSet<>();
-        //set.add(PrefKey.class.getCanonicalName());
         set.add(PrefsConfig.class.getCanonicalName());
         return set;
     }
