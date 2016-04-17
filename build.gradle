@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.5.0'
+        classpath 'com.android.tools.build:gradle:2.0.0'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:+'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:+'
     }
@@ -17,7 +17,7 @@ allprojects {
 
 ext {
     publishedGroupId = 'ds.gendalf'
-    libraryVersion = '1.3.0'
+    libraryVersion = '1.3.1'
 }
 
 

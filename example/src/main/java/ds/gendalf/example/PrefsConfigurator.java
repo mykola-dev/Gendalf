@@ -30,5 +30,6 @@ interface UserPrefsConfigurator {
     boolean admin = true;
     float length = 20.5f;
     long time = 0;
+    long phone = 380951234567L;
     Set<String> friends = null;
 }

@@ -111,6 +111,8 @@ final class Utils {
 
         if (type.equals(TypeName.FLOAT))
             return String.format("%sf", constValue);
+        else if (type.equals(TypeName.LONG))
+            return String.format("%sL", constValue);
         else if (type.equals(STRING))
             return String.format("\"%s\"", constValue);
 
